@@ -90,6 +90,12 @@ html.dark .card {
 }
 html.dark .input-field {
     border-color: rgba(255, 244, 214, 0.2);
+    background-color: #5a3630;
+    color: #FFF4D6;
+}
+html.dark .input-field option {
+    background-color: #5a3630;
+    color: #FFF4D6;
 }
 .input-field:focus {
     outline: none;
