@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baker Dashboard - Crumb & Canvas</title>
+    <script>
+        // Apply theme immediately to prevent flash
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        vanilla: '#FFF4D6',
+                        cocoa: '#4A2924',
+                        apricot: '#F4A261'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="antialiased selection:bg-apricot selection:text-vanilla flex h-screen overflow-hidden">
+
+    <!-- Mobile Sidebar Backdrop -->
+    <div id="sidebarBackdrop" class="fixed inset-0 bg-black/50 z-40 hidden lg:hidden"></div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="w-64 bg-cocoa text-vanilla flex flex-col fixed lg:static inset-y-0 left-0 z-50 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 shrink-0">
+        <div class="h-20 flex items-center px-6 border-b border-vanilla/10 shrink-0">
+            <h2 class="font-serif font-bold text-2xl text-vanilla tracking-wide">Baker Operations</h2>
+        </div>
+        <nav class="flex-1 py-6 px-4 space-y-2 overflow-y-auto" id="sidebarNav">
+            <a href="#" data-target="tab-overview" class="tab-link active flex items-center gap-3 px-4 py-3 bg-apricot/20 text-apricot rounded-lg font-medium"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg> Overview</a>
+            <a href="#" data-target="tab-orders" class="tab-link flex items-center gap-3 px-4 py-3 text-vanilla/70 hover:text-vanilla hover:bg-vanilla/5 rounded-lg font-medium"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg> Orders</a>
+            <a href="#" data-target="tab-baking" class="tab-link flex items-center gap-3 px-4 py-3 text-vanilla/70 hover:text-vanilla hover:bg-vanilla/5 rounded-lg font-medium"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Baking Queue</a>
+            <a href="#" data-target="tab-delivery" class="tab-link flex items-center gap-3 px-4 py-3 text-vanilla/70 hover:text-vanilla hover:bg-vanilla/5 rounded-lg font-medium"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg> Delivery</a>
+            <a href="#" data-target="tab-pets" class="tab-link flex items-center gap-3 px-4 py-3 text-vanilla/70 hover:text-vanilla hover:bg-vanilla/5 rounded-lg font-medium"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"></path></svg> Pet-Friendly Orders</a>
+        </nav>
+        <div class="p-4 border-t border-vanilla/10 space-y-4 shrink-0">
+            <!-- User Profile -->
+            <div class="flex items-center px-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-apricot flex items-center justify-center font-bold text-cocoa shadow-sm">BC</div>
+                    <div class="flex flex-col">
+                        <span class="text-sm font-bold text-vanilla">Baker Chef</span>
+                        <span class="text-xs text-vanilla/50">Admin</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Logout Button -->
+            <a href="index.html" class="flex items-center gap-3 px-4 py-2 text-sm text-vanilla/70 hover:text-white hover:bg-vanilla/5 rounded-lg transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                Logout
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col h-full bg-vanilla/30 dark:bg-cocoa/90 overflow-hidden">
+        
+        <!-- Top Header -->
+        <header class="h-20 bg-white/50 dark:bg-[#5a3630]/50 backdrop-blur-md border-b border-cocoa/5 dark:border-vanilla/5 flex items-center justify-between px-4 lg:px-8 shrink-0">
+            <div class="flex items-center gap-3">
+                <button id="dashboardMobileMenuBtn" class="lg:hidden text-cocoa dark:text-vanilla p-2 focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+                <a href="index.html" class="flex items-center gap-2 group">
+                    <svg class="w-8 h-8 lg:w-10 lg:h-10 fill-apricot transform group-hover:rotate-12 transition-transform duration-300 shrink-0" viewBox="0 0 24 24"><path d="M12,2A2,2 0 0,1 14,4C14,5.11 13.1,6 12,6C10.9,6 10,5.11 10,4A2,2 0 0,1 12,2M7,12A2,2 0 0,0 9,14A2,2 0 0,0 11,12V10H13V12A2,2 0 0,0 15,14A2,2 0 0,0 17,12V8H7V12M19,16H5V20H19V16M21,16C21,14.9 20.1,14 19,14H18V9A1,1 0 0,0 17,8H15V6.63C15.63,6.23 16,5.54 16,4A4,4 0 0,0 12,0A4,4 0 0,0 8,4C8,5.54 8.37,6.23 9,6.63V8H7A1,1 0 0,0 6,9V14H5C3.9,14 3,14.9 3,16V20C3,21.1 3.9,22 5,22H19C20.1,22 21,21.1 21,20V16Z"/></svg>
+                    <span class="font-serif font-bold text-lg lg:text-xl text-cocoa dark:text-vanilla whitespace-nowrap">Crumb & Canvas</span>
+                </a>
+            </div>
+            <!-- Theme Toggle on the right -->
+            <button id="themeToggle" class="theme-donut p-2 focus:outline-none transition-transform hover:scale-110" aria-label="Toggle Theme">
+                <div id="donutIcon" class="flex items-center justify-center"></div>
+            </button>
+        </header>
+
+        <!-- Dashboard Content -->
+        <main class="flex-1 overflow-y-auto p-8 relative">
+            
+            <!-- Overview Tab (Active) -->
+            <div id="tab-overview" class="tab-content active block">
+                <!-- Overview Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="card p-6 border-t-4 border-apricot">
+                        <p class="text-sm text-cocoa/60 dark:text-vanilla/60 font-semibold mb-1">Today's Orders</p>
+                        <h3 class="text-3xl font-bold">12</h3>
+                    </div>
+                    <div class="card p-6 border-t-4 border-blue-400">
+                        <p class="text-sm text-cocoa/60 dark:text-vanilla/60 font-semibold mb-1">Baking Queue</p>
+                        <h3 class="text-3xl font-bold">5</h3>
+                    </div>
+                    <div class="card p-6 border-t-4 border-green-400">
+                        <p class="text-sm text-cocoa/60 dark:text-vanilla/60 font-semibold mb-1">Ready for Delivery</p>
+                        <h3 class="text-3xl font-bold">4</h3>
+                    </div>
+                    <div class="card p-6 border-t-4 border-purple-400">
+                        <p class="text-sm text-cocoa/60 dark:text-vanilla/60 font-semibold mb-1">Today's Revenue</p>
+                        <h3 class="text-3xl font-bold">$845.00</h3>
+                    </div>
+                </div>
+
+                <!-- Main Order Table -->
+                <div class="card mb-8">
+                    <div class="p-6 border-b border-cocoa/5 dark:border-vanilla/10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <h3 class="font-serif font-bold text-xl">Active Customizations</h3>
+                        <div class="flex items-center gap-2 text-sm">
+                            <label class="flex items-center gap-2 cursor-pointer bg-apricot/10 px-3 py-1.5 rounded-full border border-apricot/30">
+                                <input type="checkbox" id="dashPetFilter" class="rounded text-apricot focus:ring-apricot">
+                                <span class="font-semibold whitespace-nowrap">Pet-Friendly Only 🐾</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse whitespace-nowrap">
+                            <thead>
+                                <tr class="bg-cocoa/5 dark:bg-black/20 text-sm uppercase tracking-wider">
+                                    <th class="p-4 font-semibold">Order ID</th>
+                                    <th class="p-4 font-semibold">Customer</th>
+                                    <th class="p-4 font-semibold">Product</th>
+                                    <th class="p-4 font-semibold">Delivery Slot</th>
+                                    <th class="p-4 font-semibold">Status</th>
+                                    <th class="p-4 font-semibold">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-sm">
+                                <!-- Row 1 -->
+                                <tr class="border-b border-cocoa/5 dark:border-vanilla/5 hover:bg-cocoa/5 dark:hover:bg-white/5 order-row" data-pet="false">
+                                    <td class="p-4 font-mono font-bold">#ORD-092</td>
+                                    <td class="p-4">Sarah Jenkins</td>
+                                    <td class="p-4">
+                                        <p class="font-bold">8" Classic Tier</p>
+                                        <p class="text-xs text-cocoa/60 dark:text-vanilla/60">Vanilla, Floral Decor</p>
+                                    </td>
+                                    <td class="p-4">Today, Morning</td>
+                                    <td class="p-4"><span class="px-2 py-1 rounded bg-blue-100 text-blue-800 text-xs font-bold">Baking</span></td>
+                                    <td class="p-4"><button class="text-apricot hover:underline font-semibold">Update</button></td>
+                                </tr>
+                                <!-- Row 2 -->
+                                <tr class="border-b border-cocoa/5 dark:border-vanilla/5 hover:bg-cocoa/5 dark:hover:bg-white/5 order-row" data-pet="true">
+                                    <td class="p-4 font-mono font-bold text-apricot">#ORD-093 🐾</td>
+                                    <td class="p-4">Mike Ross</td>
+                                    <td class="p-4">
+                                        <p class="font-bold">Pup Birthday Cake</p>
+                                        <p class="text-xs text-cocoa/60 dark:text-vanilla/60 text-apricot">Peanut Butter (Pet Safe)</p>
+                                    </td>
+                                    <td class="p-4">Today, Afternoon</td>
+                                    <td class="p-4"><span class="px-2 py-1 rounded bg-yellow-100 text-yellow-800 text-xs font-bold">New Order</span></td>
+                                    <td class="p-4"><button class="text-apricot hover:underline font-semibold">Update</button></td>
+                                </tr>
+                                <!-- Row 3 -->
+                                <tr class="border-b border-cocoa/5 dark:border-vanilla/5 hover:bg-cocoa/5 dark:hover:bg-white/5 order-row" data-pet="false">
+                                    <td class="p-4 font-mono font-bold">#ORD-094</td>
+                                    <td class="p-4">Emma Watson</td>
+                                    <td class="p-4">
+                                        <p class="font-bold">10" Midnight Choc</p>
+                                        <p class="text-xs text-cocoa/60 dark:text-vanilla/60">Smooth Buttercream</p>
+                                    </td>
+                                    <td class="p-4">Tomorrow, Morning</td>
+                                    <td class="p-4"><span class="px-2 py-1 rounded bg-green-100 text-green-800 text-xs font-bold">Ready</span></td>
+                                    <td class="p-4"><button class="text-apricot hover:underline font-semibold">Update</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Baking Queue Kanban -->
+                <h3 class="font-serif font-bold text-xl mb-4">Live Baking Queue</h3>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Column 1 -->
+                    <div class="bg-cocoa/5 dark:bg-black/20 rounded-xl p-4">
+                        <h4 class="font-bold mb-4 flex justify-between items-center gap-2">To Bake <span class="bg-cocoa text-vanilla text-xs px-2 py-1 rounded-full shrink-0">2</span></h4>
+                        <div class="space-y-3">
+                            <div class="bg-white dark:bg-[#5a3630] p-4 rounded-lg shadow-sm border-l-4 border-yellow-400">
+                                <p class="text-xs text-apricot font-bold mb-1">🐾 #ORD-093 (Pet)</p>
+                                <p class="font-bold">Pup Birthday Cake</p>
+                                <p class="text-xs opacity-70">Due: 2:00 PM</p>
+                            </div>
+                            <div class="bg-white dark:bg-[#5a3630] p-4 rounded-lg shadow-sm border-l-4 border-gray-400">
+                                <p class="text-xs font-mono mb-1">#ORD-095</p>
+                                <p class="font-bold">6" Lemon Sponge</p>
+                                <p class="text-xs opacity-70">Due: Tomorrow</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Column 2 -->
+                    <div class="bg-cocoa/5 dark:bg-black/20 rounded-xl p-4">
+                        <h4 class="font-bold mb-4 flex justify-between items-center gap-2">Decorating <span class="bg-cocoa text-vanilla text-xs px-2 py-1 rounded-full shrink-0">1</span></h4>
+                        <div class="space-y-3">
+                            <div class="bg-white dark:bg-[#5a3630] p-4 rounded-lg shadow-sm border-l-4 border-blue-400">
+                                <p class="text-xs font-mono mb-1">#ORD-092</p>
+                                <p class="font-bold">8" Classic Tier</p>
+                                <p class="text-xs opacity-70">Add Floral Decor</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Column 3 -->
+                    <div class="bg-cocoa/5 dark:bg-black/20 rounded-xl p-4">
+                        <h4 class="font-bold mb-4 flex justify-between items-center gap-2">Ready / Out <span class="bg-cocoa text-vanilla text-xs px-2 py-1 rounded-full shrink-0">1</span></h4>
+                        <div class="space-y-3">
+                            <div class="bg-white dark:bg-[#5a3630] p-4 rounded-lg shadow-sm border-l-4 border-green-400 opacity-70">
+                                <p class="text-xs font-mono mb-1">#ORD-094</p>
+                                <p class="font-bold">10" Midnight Choc</p>
+                                <p class="text-xs">Waiting for Pickup</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orders Tab -->
+            <div id="tab-orders" class="tab-content hidden">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+                    <h2 class="font-serif font-bold text-2xl text-cocoa dark:text-vanilla">All Orders</h2>
+                    <div class="flex flex-wrap gap-2">
+                        <input type="text" placeholder="Search orders..." class="px-4 py-2 rounded-lg border border-cocoa/20 dark:border-vanilla/20 bg-white/50 dark:bg-black/20 focus:outline-none focus:border-apricot text-sm text-cocoa dark:text-vanilla w-full sm:w-auto">
+                        <select class="px-4 py-2 rounded-lg border border-cocoa/20 dark:border-vanilla/20 bg-white/50 dark:bg-black/20 focus:outline-none focus:border-apricot text-sm text-cocoa dark:text-vanilla">
+                            <option>All Statuses</option>
+                            <option>New</option>
+                            <option>Baking</option>
+                            <option>Ready</option>
+                        </select>
+                        <button class="btn-primary py-2 px-4 text-sm rounded-lg">Filter</button>
+                    </div>
+                </div>
+                
+                <div class="card overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse whitespace-nowrap">
+                        <thead>
+                            <tr class="bg-cocoa/5 dark:bg-black/20 text-sm uppercase tracking-wider whitespace-nowrap">
+                                <th class="p-4 font-semibold">Date</th>
+                                <th class="p-4 font-semibold">Order ID</th>
+                                <th class="p-4 font-semibold">Customer</th>
+                                <th class="p-4 font-semibold">Product</th>
+                                <th class="p-4 font-semibold">Status</th>
+                                <th class="p-4 font-semibold text-right">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm">
+                            <tr class="border-b border-cocoa/5 dark:border-vanilla/5 hover:bg-cocoa/5 dark:hover:bg-white/5 transition-colors whitespace-nowrap">
+                                <td class="p-4 text-cocoa/70 dark:text-vanilla/70">Oct 24, 2026</td>
+                                <td class="p-4 font-mono font-bold">#ORD-095</td>
+                                <td class="p-4">Eleanor Shellstrop</td>
+                                <td class="p-4">6" Lemon Sponge</td>
+                                <td class="p-4"><span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs font-bold rounded-full">New Order</span></td>
+                                <td class="p-4 text-right font-medium">$55.00</td>
+                            </tr>
+                            <tr class="border-b border-cocoa/5 dark:border-vanilla/5 hover:bg-cocoa/5 dark:hover:bg-white/5 transition-colors">
+                                <td class="p-4 text-cocoa/70 dark:text-vanilla/70">Oct 24, 2026</td>
+                                <td class="p-4 font-mono font-bold">#ORD-094</td>
+                                <td class="p-4">Michael Realman</td>
+                                <td class="p-4">10" Midnight Choc</td>
+                                <td class="p-4"><span class="px-2 py-1 bg-green-100 text-green-800 text-xs font-bold rounded-full">Ready</span></td>
+                                <td class="p-4 text-right font-medium">$120.00</td>
+                            </tr>
+                            <tr class="border-b border-cocoa/5 dark:border-vanilla/5 hover:bg-cocoa/5 dark:hover:bg-white/5 transition-colors">
+                                <td class="p-4 text-cocoa/70 dark:text-vanilla/70">Oct 24, 2026</td>
+                                <td class="p-4 font-mono font-bold text-apricot">#ORD-093 🐾</td>
+                                <td class="p-4">Chidi Anagonye</td>
+                                <td class="p-4">Pup Birthday Cake</td>
+                                <td class="p-4"><span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-bold rounded-full">Baking</span></td>
+                                <td class="p-4 text-right font-medium">$45.00</td>
+                            </tr>
+                            <tr class="border-b border-cocoa/5 dark:border-vanilla/5 hover:bg-cocoa/5 dark:hover:bg-white/5 transition-colors">
+                                <td class="p-4 text-cocoa/70 dark:text-vanilla/70">Oct 23, 2026</td>
+                                <td class="p-4 font-mono font-bold">#ORD-092</td>
+                                <td class="p-4">Sarah Jenkins</td>
+                                <td class="p-4">8" Classic Tier</td>
+                                <td class="p-4"><span class="px-2 py-1 bg-gray-100 text-gray-800 text-xs font-bold rounded-full">Delivered</span></td>
+                                <td class="p-4 text-right font-medium">$85.00</td>
+                            </tr>
+                            <tr class="hover:bg-cocoa/5 dark:hover:bg-white/5 transition-colors whitespace-nowrap">
+                                <td class="p-4 text-cocoa/70 dark:text-vanilla/70">Oct 23, 2026</td>
+                                <td class="p-4 font-mono font-bold">#ORD-091</td>
+                                <td class="p-4">Tahani Al-Jamil</td>
+                                <td class="p-4">Macaron Tower (50pc)</td>
+                                <td class="p-4"><span class="px-2 py-1 bg-gray-100 text-gray-800 text-xs font-bold rounded-full">Delivered</span></td>
+                                <td class="p-4 text-right font-medium">$150.00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    </div>
+                    <div class="p-4 border-t border-cocoa/5 dark:border-vanilla/5 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm">
+                        <span class="text-cocoa/60 dark:text-vanilla/60">Showing 1 to 5 of 42 orders</span>
+                        <div class="flex gap-1">
+                            <button class="px-3 py-1 border border-cocoa/20 dark:border-vanilla/20 rounded hover:bg-apricot/10">Prev</button>
+                            <button class="px-3 py-1 bg-apricot text-cocoa font-bold rounded">1</button>
+                            <button class="px-3 py-1 border border-cocoa/20 dark:border-vanilla/20 rounded hover:bg-apricot/10">2</button>
+                            <button class="px-3 py-1 border border-cocoa/20 dark:border-vanilla/20 rounded hover:bg-apricot/10">3</button>
+                            <button class="px-3 py-1 border border-cocoa/20 dark:border-vanilla/20 rounded hover:bg-apricot/10">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Baking Queue Tab -->
+            <div id="tab-baking" class="tab-content hidden lg:h-full flex flex-col">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 shrink-0">
+                    <h2 class="font-serif font-bold text-2xl text-cocoa dark:text-vanilla">Baking Pipeline</h2>
+                    <button class="btn-primary py-2 px-4 text-sm rounded-lg">+ Add Manual Task</button>
+                </div>
+                
+                <div class="flex-1 grid grid-cols-1 lg:grid-cols-4 gap-6 lg:min-h-0">
+                    <!-- Column 1: Prep -->
+                    <div class="bg-cocoa/5 dark:bg-black/20 rounded-xl p-4 flex flex-col lg:h-full lg:overflow-hidden">
+                        <h4 class="font-bold mb-4 flex justify-between items-center shrink-0">
+                            Prep Station 
+                            <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full font-bold">2 Tasks</span>
+                        </h4>
+                        <div class="flex-1 lg:overflow-y-auto space-y-3 pr-2">
+                            <div class="bg-white dark:bg-[#5a3630] p-4 rounded-lg shadow-sm border-l-4 border-yellow-400 cursor-move hover:shadow-md transition-shadow">
+                                <div class="flex justify-between items-start mb-2">
+                                    <p class="text-xs font-mono font-bold text-apricot">#ORD-095</p>
+                                    <span class="text-xs bg-red-100 text-red-800 px-1 rounded">High</span>
+                                </div>
+                                <p class="font-bold mb-1">6" Lemon Sponge</p>
+                                <p class="text-xs opacity-70 mb-3">Mix batter, zest 4 lemons.</p>
+                                <div class="flex gap-2">
+                                    <img src="https://ui-avatars.com/api/?name=Jane+Doe&background=F4A261&color=4A2924" class="w-6 h-6 rounded-full" alt="Assignee">
+                                </div>
+                            </div>
+                            <div class="bg-white dark:bg-[#5a3630] p-4 rounded-lg shadow-sm border-l-4 border-yellow-400 cursor-move hover:shadow-md transition-shadow">
+                                <div class="flex justify-between items-start mb-2">
+                                    <p class="text-xs font-mono font-bold text-apricot">#ORD-097</p>
+                                </div>
+                                <p class="font-bold mb-1">Dozen Croissants</p>
+                                <p class="text-xs opacity-70 mb-3">Laminate dough (Fold 2/3).</p>
+                                <div class="flex gap-2">
+                                    <img src="https://ui-avatars.com/api/?name=Mark+S&background=F4A261&color=4A2924" class="w-6 h-6 rounded-full" alt="Assignee">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Column 2: Bake -->
+                    <div class="bg-cocoa/5 dark:bg-black/20 rounded-xl p-4 flex flex-col lg:h-full lg:overflow-hidden">
+                        <h4 class="font-bold mb-4 flex justify-between items-center shrink-0">
+                            Ovens (Baking)
+                            <span class="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded-full font-bold">1 Task</span>
+                        </h4>
+                        <div class="flex-1 lg:overflow-y-auto space-y-3 pr-2">
+                            <div class="bg-white dark:bg-[#5a3630] p-4 rounded-lg shadow-sm border-l-4 border-orange-400 cursor-move hover:shadow-md transition-shadow">
+                                <div class="flex justify-between items-start mb-2">
+                                    <p class="text-xs font-mono font-bold text-apricot">#ORD-093 🐾</p>
+                                    <span class="text-xs text-orange-600 animate-pulse">Oven 2 (15m left)</span>
+                                </div>
+                                <p class="font-bold mb-1">Pup Birthday Cake</p>
+                                <p class="text-xs opacity-70 mb-3 text-apricot">Pet-safe peanut butter base.</p>
+                                <div class="w-full bg-gray-200 rounded-full h-1.5 dark:bg-gray-700">
+                                    <div class="bg-orange-500 h-1.5 rounded-full" style="width: 60%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Column 3: Decorate -->
+                    <div class="bg-cocoa/5 dark:bg-black/20 rounded-xl p-4 flex flex-col lg:h-full lg:overflow-hidden">
+                        <h4 class="font-bold mb-4 flex justify-between items-center shrink-0">
+                            Decorating
+                            <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full font-bold">1 Task</span>
+                        </h4>
+                        <div class="flex-1 lg:overflow-y-auto space-y-3 pr-2">
+                            <div class="bg-white dark:bg-[#5a3630] p-4 rounded-lg shadow-sm border-l-4 border-blue-400 cursor-move hover:shadow-md transition-shadow">
+                                <div class="flex justify-between items-start mb-2">
+                                    <p class="text-xs font-mono font-bold text-apricot">#ORD-092</p>
+                                </div>
+                                <p class="font-bold mb-1">8" Classic Tier</p>
+                                <p class="text-xs opacity-70 mb-3">Pipe buttercream roses (Pink/White).</p>
+                                <div class="flex gap-2">
+                                    <img src="https://ui-avatars.com/api/?name=Sarah+J&background=4A2924&color=FFF4D6" class="w-6 h-6 rounded-full" alt="Assignee">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Column 4: QA/Ready -->
+                    <div class="bg-cocoa/5 dark:bg-black/20 rounded-xl p-4 flex flex-col lg:h-full lg:overflow-hidden">
+                        <h4 class="font-bold mb-4 flex justify-between items-center shrink-0">
+                            Quality Check
+                            <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-bold">1 Task</span>
+                        </h4>
+                        <div class="flex-1 lg:overflow-y-auto space-y-3 pr-2">
+                            <div class="bg-white dark:bg-[#5a3630] p-4 rounded-lg shadow-sm border-l-4 border-green-400 cursor-move hover:shadow-md transition-shadow opacity-75">
+                                <div class="flex justify-between items-start mb-2">
+                                    <p class="text-xs font-mono font-bold text-apricot">#ORD-094</p>
+                                </div>
+                                <p class="font-bold mb-1">10" Midnight Choc</p>
+                                <p class="text-xs opacity-70 mb-3">Boxed and ready in Fridge A.</p>
+                                <button class="w-full py-1 text-xs bg-green-100 text-green-800 font-bold rounded border border-green-200 hover:bg-green-200">Mark Completed</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Delivery Tab -->
+            <div id="tab-delivery" class="tab-content hidden">
+                <h2 class="font-serif font-bold text-2xl text-cocoa dark:text-vanilla mb-6">Delivery & Dispatch</h2>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-2">
+                        <div class="card p-6 mb-6">
+                            <h3 class="font-bold text-lg mb-4">Out for Delivery</h3>
+                            <div class="space-y-4">
+                                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 bg-cocoa/5 dark:bg-black/20 rounded-lg border border-cocoa/10 dark:border-vanilla/10">
+                                    <div class="flex items-center gap-4">
+                                        <div class="w-12 h-12 shrink-0 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-xl">🚚</div>
+                                        <div>
+                                            <p class="font-bold font-mono">#ORD-090</p>
+                                            <p class="text-sm opacity-70">Driver: Sam | ETA: 12:45 PM</p>
+                                        </div>
+                                    </div>
+                                    <span class="px-3 py-1 bg-blue-100 text-blue-800 font-bold text-xs rounded-full whitespace-nowrap self-end sm:self-auto">On the way</span>
+                                </div>
+                                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 bg-cocoa/5 dark:bg-black/20 rounded-lg border border-cocoa/10 dark:border-vanilla/10">
+                                    <div class="flex items-center gap-4">
+                                        <div class="w-12 h-12 shrink-0 bg-green-100 rounded-full flex items-center justify-center text-green-600 text-xl">✅</div>
+                                        <div>
+                                            <p class="font-bold font-mono">#ORD-088</p>
+                                            <p class="text-sm opacity-70">Driver: Alex | Delivered: 11:30 AM</p>
+                                        </div>
+                                    </div>
+                                    <span class="px-3 py-1 bg-green-100 text-green-800 font-bold text-xs rounded-full whitespace-nowrap self-end sm:self-auto">Delivered</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card p-6">
+                            <h3 class="font-bold text-lg mb-4">Awaiting Store Pickup</h3>
+                            <div class="space-y-4">
+                                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 border border-cocoa/10 dark:border-vanilla/10 rounded-lg">
+                                    <div>
+                                        <p class="font-bold font-mono text-apricot">#ORD-094</p>
+                                        <p class="text-sm font-medium">Michael Realman</p>
+                                        <p class="text-xs opacity-70">10" Midnight Choc</p>
+                                    </div>
+                                    <button class="btn-primary py-2 px-4 text-sm rounded whitespace-nowrap self-stretch sm:self-auto">Mark Picked Up</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="lg:col-span-1">
+                        <div class="card p-6 sticky top-6">
+                            <h3 class="font-bold text-lg mb-4">Courier Partners</h3>
+                            <ul class="space-y-4 text-sm">
+                                <li class="flex justify-between items-center">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-2 h-2 rounded-full bg-green-500"></div>
+                                        <span>Sam (Active)</span>
+                                    </div>
+                                    <span class="font-bold text-cocoa/60 dark:text-vanilla/60">1 Route</span>
+                                </li>
+                                <li class="flex justify-between items-center">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-2 h-2 rounded-full bg-gray-400"></div>
+                                        <span>Alex (Idle)</span>
+                                    </div>
+                                    <span class="font-bold text-cocoa/60 dark:text-vanilla/60">0 Routes</span>
+                                </li>
+                                <li class="flex justify-between items-center">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-2 h-2 rounded-full bg-red-500"></div>
+                                        <span>Jordan (Offline)</span>
+                                    </div>
+                                    <span class="font-bold text-cocoa/60 dark:text-vanilla/60">-</span>
+                                </li>
+                            </ul>
+                            <div class="mt-6 pt-6 border-t border-cocoa/10 dark:border-vanilla/10">
+                                <button class="w-full py-2 border border-apricot text-apricot font-bold rounded-lg hover:bg-apricot hover:text-cocoa transition-colors">Request Flex Driver</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pet-Friendly Orders Tab -->
+            <div id="tab-pets" class="tab-content hidden">
+                <div class="bg-apricot/20 border border-apricot/30 p-6 rounded-xl flex items-start gap-4 mb-8">
+                    <span class="text-4xl">🐾</span>
+                    <div>
+                        <h3 class="font-serif font-bold text-xl text-cocoa dark:text-vanilla mb-1">Pet-Safe Preparation Protocol</h3>
+                        <p class="text-sm opacity-80 max-w-3xl">All items on this list must be prepared in the dedicated Pet-Safe zone (Station B). Ensure all utensils are green-tagged to prevent cross-contamination with human-grade chocolate, xylitol, or grapes.</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="card p-6 border-l-4 border-apricot relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
+                            <span class="text-8xl">🐕</span>
+                        </div>
+                        <div class="relative z-10">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs font-bold rounded-full mb-2 inline-block">Baking</span>
+                                    <h4 class="font-bold font-mono text-lg text-apricot">#ORD-093</h4>
+                                    <p class="text-sm font-bold mt-1">Pup Birthday Cake</p>
+                                </div>
+                                <span class="font-bold text-lg">$45.00</span>
+                            </div>
+                            <div class="text-sm space-y-2 mb-4">
+                                <p><span class="font-bold opacity-70">Customer:</span> Chidi Anagonye</p>
+                                <p><span class="font-bold opacity-70">Pet Name:</span> "Kant"</p>
+                                <p><span class="font-bold opacity-70">Base:</span> Peanut Butter & Banana</p>
+                                <p><span class="font-bold opacity-70">Frosting:</span> Yogurt & Potato Mash</p>
+                                <p><span class="font-bold text-red-500">Allergies:</span> No grain</p>
+                            </div>
+                            <button class="w-full bg-cocoa text-vanilla dark:bg-vanilla dark:text-cocoa font-bold py-2 rounded-lg hover:bg-cocoa/80 transition-colors">Print Pet Label</button>
+                        </div>
+                    </div>
+                    
+                    <div class="card p-6 border-l-4 border-apricot opacity-60 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
+                            <span class="text-8xl">🐈</span>
+                        </div>
+                        <div class="relative z-10">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <span class="px-2 py-1 bg-gray-100 text-gray-800 text-xs font-bold rounded-full mb-2 inline-block">Completed</span>
+                                    <h4 class="font-bold font-mono text-lg text-apricot">#ORD-085</h4>
+                                    <p class="text-sm font-bold mt-1">Salmon Nibbles (Dozen)</p>
+                                </div>
+                            </div>
+                            <div class="text-sm space-y-2 mb-4">
+                                <p><span class="font-bold opacity-70">Customer:</span> Jason Mendoza</p>
+                                <p><span class="font-bold opacity-70">Pet Name:</span> "Bortles"</p>
+                                <p><span class="font-bold opacity-70">Base:</span> Wild Salmon & Sweet Potato</p>
+                            </div>
+                            <button class="w-full border border-cocoa/20 font-bold py-2 rounded-lg" disabled>Dispatched</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+        
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const navLinks = document.querySelectorAll('.tab-link');
+                const tabContents = document.querySelectorAll('.tab-content');
+
+                navLinks.forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        
+                        // Remove active class from all links
+                        navLinks.forEach(l => {
+                            l.classList.remove('bg-apricot/20', 'text-apricot');
+                            l.classList.add('text-vanilla/70', 'hover:text-vanilla', 'hover:bg-vanilla/5');
+                        });
+                        
+                        // Add active class to clicked link
+                        e.currentTarget.classList.remove('text-vanilla/70', 'hover:text-vanilla', 'hover:bg-vanilla/5');
+                        e.currentTarget.classList.add('bg-apricot/20', 'text-apricot');
+                        
+                        // Hide all tab contents
+                        tabContents.forEach(tab => {
+                            tab.classList.add('hidden');
+                            tab.classList.remove('block');
+                        });
+                        
+                        // Show target tab content
+                        const targetId = e.currentTarget.getAttribute('data-target');
+                        const targetTab = document.getElementById(targetId);
+                        if (targetTab) {
+                            targetTab.classList.remove('hidden');
+                            targetTab.classList.add('block');
+                        }
+                        
+                        // Close mobile sidebar on link click
+                        if (window.innerWidth < 768) {
+                            sidebar.classList.add('-translate-x-full');
+                            sidebarBackdrop.classList.add('hidden');
+                        }
+                    });
+                });
+
+                // Mobile Sidebar Toggle Logic
+                const mobileMenuBtn = document.getElementById('dashboardMobileMenuBtn');
+                const sidebar = document.getElementById('sidebar');
+                const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+
+                if (mobileMenuBtn && sidebar && sidebarBackdrop) {
+                    mobileMenuBtn.addEventListener('click', () => {
+                        sidebar.classList.toggle('-translate-x-full');
+                        sidebarBackdrop.classList.toggle('hidden');
+                    });
+
+                    sidebarBackdrop.addEventListener('click', () => {
+                        sidebar.classList.add('-translate-x-full');
+                        sidebarBackdrop.classList.add('hidden');
+                    });
+                }
+            });
+        </script>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

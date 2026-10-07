@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customize - Custom Bakery & Pastry Ordering Studio</title>
+    <script>
+        // Apply theme immediately to prevent flash
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        vanilla: '#FFF4D6',
+                        cocoa: '#4A2924',
+                        apricot: '#F4A261'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="antialiased selection:bg-apricot selection:text-vanilla">
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-vanilla/90 dark:bg-cocoa/90 backdrop-blur-md border-b border-cocoa/10 dark:border-vanilla/10 transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex-shrink-0 flex items-center">
+                    <a href="index.html" class="flex items-center gap-2 group">
+                        <svg class="w-10 h-10 fill-apricot transform group-hover:rotate-12 transition-transform duration-300" viewBox="0 0 24 24"><path d="M12,2A2,2 0 0,1 14,4C14,5.11 13.1,6 12,6C10.9,6 10,5.11 10,4A2,2 0 0,1 12,2M7,12A2,2 0 0,0 9,14A2,2 0 0,0 11,12V10H13V12A2,2 0 0,0 15,14A2,2 0 0,0 17,12V8H7V12M19,16H5V20H19V16M21,16C21,14.9 20.1,14 19,14H18V9A1,1 0 0,0 17,8H15V6.63C15.63,6.23 16,5.54 16,4A4,4 0 0,0 12,0A4,4 0 0,0 8,4C8,5.54 8.37,6.23 9,6.63V8H7A1,1 0 0,0 6,9V14H5C3.9,14 3,14.9 3,16V20C3,21.1 3.9,22 5,22H19C20.1,22 21,21.1 21,20V16Z"/></svg>
+                        <span class="font-serif font-bold text-xl text-cocoa dark:text-vanilla">Crumb & Canvas</span>
+                    </a>
+                </div>
+                <nav class="hidden lg:flex items-center space-x-8">
+                    <a href="index.html" class="text-cocoa dark:text-vanilla hover:text-apricot dark:hover:text-apricot font-medium transition-colors">Home</a>
+                    <a href="menu.html" class="text-cocoa dark:text-vanilla hover:text-apricot dark:hover:text-apricot font-medium transition-colors">Menu</a>
+                    <a href="customize.html" class="text-apricot font-medium transition-colors">Customize</a>
+                    <a href="dashboard.html" class="text-cocoa dark:text-vanilla hover:text-apricot dark:hover:text-apricot font-medium transition-colors">Dashboard</a>
+                </nav>
+                <div class="hidden lg:flex items-center space-x-4">
+                    <button id="themeToggle" class="theme-donut p-2 rounded-full hover:bg-cocoa/5 dark:hover:bg-vanilla/5 focus:outline-none" aria-label="Toggle Theme">
+                        <div id="donutIcon" class="flex items-center justify-center"></div>
+                    </button>
+                    <a href="login.html" class="btn-primary text-sm py-2 px-5">Login</a>
+                </div>
+                
+                <!-- Mobile menu button -->
+                <div class="lg:hidden flex items-center gap-2">
+                    <button id="mobileMenuBtn" class="text-cocoa dark:text-vanilla p-2 focus:outline-none">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobileMenu"
+            class="hidden lg:hidden bg-vanilla dark:bg-cocoa border-t border-cocoa/10 dark:border-vanilla/10">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="index.html"
+                    class="block px-3 py-2 text-base font-medium text-cocoa dark:text-vanilla hover:bg-apricot/10 rounded-md">Home</a>
+                <a href="menu.html"
+                    class="block px-3 py-2 text-base font-medium text-cocoa dark:text-vanilla hover:bg-apricot/10 rounded-md">Menu</a>
+                <a href="customize.html"
+                    class="block px-3 py-2 text-base font-medium text-apricot bg-apricot/10 rounded-md">Customize</a>
+                <a href="dashboard.html"
+                    class="block px-3 py-2 text-base font-medium text-cocoa dark:text-vanilla hover:bg-apricot/10 rounded-md">Dashboard</a>
+                
+                <div class="flex items-center justify-between px-3 py-4 mt-2 border-t border-cocoa/10 dark:border-vanilla/10">
+                    <span class="text-base font-medium text-cocoa dark:text-vanilla">Theme</span>
+                    <button id="themeToggleMobile" class="theme-donut p-2 focus:outline-none transition-transform hover:scale-110" aria-label="Toggle Theme" onclick="document.getElementById('themeToggle').click()">
+                        <div id="donutIconMobile" class="flex items-center justify-center"></div>
+                    </button>
+                </div>
+
+                <a href="login.html" class="block w-full text-center mt-2 btn-primary text-sm py-2 px-5 rounded-md">Login</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Customize Hero -->
+    <section class="relative py-24 bg-cocoa text-vanilla overflow-hidden">
+        <div class="absolute inset-0 z-0 opacity-40">
+            <img src="https://images.pexels.com/photos/1739748/pexels-photo-1739748.jpeg" alt="Cake Decorating" class="w-full h-full object-cover">
+        </div>
+        <div class="relative z-10 max-w-7xl mx-auto px-4 text-center">
+            <h1 class="text-5xl md:text-7xl font-serif font-bold mb-6">Build Your Perfect Cake</h1>
+            <p class="text-xl max-w-2xl mx-auto mb-10 text-vanilla/90">Customize every detail of your order to make your celebration truly unique.</p>
+            
+            <!-- Progress Tracker -->
+            <div class="flex flex-wrap items-center justify-center text-sm font-semibold text-vanilla/70 gap-2 md:gap-4">
+                <span class="text-apricot px-4 py-2 rounded-full bg-vanilla/10 backdrop-blur-sm border border-apricot/30">01 Size</span> <span class="hidden md:inline">&rarr;</span> 
+                <span class="px-4 py-2 rounded-full bg-vanilla/5 backdrop-blur-sm">02 Flavor</span> <span class="hidden md:inline">&rarr;</span> 
+                <span class="px-4 py-2 rounded-full bg-vanilla/5 backdrop-blur-sm">03 Style</span> <span class="hidden md:inline">&rarr;</span> 
+                <span class="px-4 py-2 rounded-full bg-vanilla/5 backdrop-blur-sm">04 Delivery</span>
+            </div>
+        </div>
+    </section>
+
+    <main class="py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <form id="customizerForm" class="flex flex-col lg:flex-row gap-12">
+                
+                <!-- Left Column: Controls -->
+                <div class="lg:w-2/3 space-y-10">
+                    
+                    <!-- Pet Friendly Toggle -->
+                    <div class="card p-6 flex justify-between items-center bg-apricot/10 border border-apricot/30">
+                        <div>
+                            <h3 class="font-serif font-bold text-xl flex items-center gap-2"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4M12,6A6,6 0 0,1 18,12A6,6 0 0,1 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6Z"/></svg> Pet-Friendly Bake</h3>
+                            <p class="text-sm text-cocoa/70 dark:text-vanilla/70">Switch to dog/cat safe ingredients.</p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="petFriendlyToggle" class="sr-only peer">
+                            <div class="w-14 h-7 bg-cocoa/20 peer-focus:outline-none rounded-full peer dark:bg-vanilla/20 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-apricot"></div>
+                        </label>
+                    </div>
+
+                    <!-- Size Selection -->
+                    <div class="card p-6">
+                        <h3 class="font-serif font-bold text-xl mb-4">Select Size</h3>
+                        <div class="grid grid-cols-3 gap-4">
+                            <div>
+                                <input type="radio" name="cakeSize" id="size6" value="6" data-price="45" class="customizer-radio hidden" checked>
+                                <label for="size6" class="block border-2 border-cocoa/20 dark:border-vanilla/20 rounded-xl p-4 text-center cursor-pointer hover:border-apricot transition-colors">
+                                    <div class="w-8 h-8 mx-auto rounded-full border-2 border-current mb-2"></div>
+                                    <span class="block font-bold">6" Mini</span>
+                                    <span class="text-xs opacity-70">Serves 6-8</span>
+                                </label>
+                            </div>
+                            <div>
+                                <input type="radio" name="cakeSize" id="size8" value="8" data-price="65" class="customizer-radio hidden">
+                                <label for="size8" class="block border-2 border-cocoa/20 dark:border-vanilla/20 rounded-xl p-4 text-center cursor-pointer hover:border-apricot transition-colors">
+                                    <div class="w-12 h-12 mx-auto rounded-full border-2 border-current mb-2"></div>
+                                    <span class="block font-bold">8" Classic</span>
+                                    <span class="text-xs opacity-70">Serves 12-15</span>
+                                </label>
+                            </div>
+                            <div>
+                                <input type="radio" name="cakeSize" id="size10" value="10" data-price="90" class="customizer-radio hidden">
+                                <label for="size10" class="block border-2 border-cocoa/20 dark:border-vanilla/20 rounded-xl p-4 text-center cursor-pointer hover:border-apricot transition-colors">
+                                    <div class="w-16 h-16 mx-auto rounded-full border-2 border-current mb-2"></div>
+                                    <span class="block font-bold">10" Party</span>
+                                    <span class="text-xs opacity-70">Serves 20-25</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Standard Flavors -->
+                    <div id="standardOptions" class="card p-6">
+                        <h3 class="font-serif font-bold text-xl mb-4">Sponge Flavor</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                            <div>
+                                <input type="radio" name="cakeFlavor" id="flavorVanilla" value="vanilla" data-price="0" class="customizer-radio hidden" checked>
+                                <label for="flavorVanilla" class="block border-2 border-cocoa/20 dark:border-vanilla/20 rounded-xl p-3 text-center cursor-pointer">
+                                    <div class="w-full h-16 bg-[#F3E5AB] rounded-lg mb-2"></div>
+                                    <span class="text-sm font-bold">Vanilla Bean</span>
+                                </label>
+                            </div>
+                            <div>
+                                <input type="radio" name="cakeFlavor" id="flavorChoc" value="chocolate" data-price="5" class="customizer-radio hidden">
+                                <label for="flavorChoc" class="block border-2 border-cocoa/20 dark:border-vanilla/20 rounded-xl p-3 text-center cursor-pointer">
+                                    <div class="w-full h-16 bg-[#4A2924] rounded-lg mb-2"></div>
+                                    <span class="text-sm font-bold">Rich Cocoa</span>
+                                </label>
+                            </div>
+                            <div>
+                                <input type="radio" name="cakeFlavor" id="flavorRed" value="redvelvet" data-price="5" class="customizer-radio hidden">
+                                <label for="flavorRed" class="block border-2 border-cocoa/20 dark:border-vanilla/20 rounded-xl p-3 text-center cursor-pointer">
+                                    <div class="w-full h-16 bg-[#8B0000] rounded-lg mb-2"></div>
+                                    <span class="text-sm font-bold">Red Velvet</span>
+                                </label>
+                            </div>
+                            <div>
+                                <input type="radio" name="cakeFlavor" id="flavorLemon" value="lemon" data-price="0" class="customizer-radio hidden">
+                                <label for="flavorLemon" class="block border-2 border-cocoa/20 dark:border-vanilla/20 rounded-xl p-3 text-center cursor-pointer">
+                                    <div class="w-full h-16 bg-[#FFFACD] rounded-lg mb-2"></div>
+                                    <span class="text-sm font-bold">Zesty Lemon</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <h3 class="font-serif font-bold text-xl mb-4">Decoration Style</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                            <div>
+                                <input type="radio" name="cakeDecor" id="decorSmooth" value="smooth" data-price="0" class="customizer-radio hidden" checked>
+                                <label for="decorSmooth" class="block border-2 border-cocoa/20 dark:border-vanilla/20 rounded-xl p-3 text-center cursor-pointer">
+                                    <span class="text-sm font-bold">Smooth Buttercream</span>
+                                </label>
+                            </div>
+                            <div>
+                                <input type="radio" name="cakeDecor" id="decorFloral" value="floral" data-price="15" class="customizer-radio hidden">
+                                <label for="decorFloral" class="block border-2 border-cocoa/20 dark:border-vanilla/20 rounded-xl p-3 text-center cursor-pointer">
+                                    <span class="text-sm font-bold">Fresh Florals (+$15)</span>
+                                </label>
+                            </div>
+                            <div>
+                                <input type="radio" name="cakeDecor" id="decorPiped" value="piped" data-price="10" class="customizer-radio hidden">
+                                <label for="decorPiped" class="block border-2 border-cocoa/20 dark:border-vanilla/20 rounded-xl p-3 text-center cursor-pointer">
+                                    <span class="text-sm font-bold">Vintage Piping (+$10)</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pet Options (Hidden by default) -->
+                    <div id="petOptions" class="card p-6 hidden bg-apricot/5 border-2 border-apricot/30">
+                        <h3 class="font-serif font-bold text-xl mb-4 text-apricot">Pet-Safe Flavors</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+                            <div>
+                                <input type="radio" name="cakeFlavorPet" id="petPeanut" value="peanut" data-price="0" class="customizer-radio hidden">
+                                <label for="petPeanut" class="block border-2 border-cocoa/20 dark:border-vanilla/20 rounded-xl p-3 text-center cursor-pointer">
+                                    <span class="text-sm font-bold">Peanut Butter & Oat</span>
+                                </label>
+                            </div>
+                            <div>
+                                <input type="radio" name="cakeFlavorPet" id="petPumpkin" value="pumpkin" data-price="0" class="customizer-radio hidden">
+                                <label for="petPumpkin" class="block border-2 border-cocoa/20 dark:border-vanilla/20 rounded-xl p-3 text-center cursor-pointer">
+                                    <span class="text-sm font-bold">Sweet Pumpkin</span>
+                                </label>
+                            </div>
+                            <div>
+                                <input type="radio" name="cakeFlavorPet" id="petSalmon" value="salmon" data-price="5" class="customizer-radio hidden">
+                                <label for="petSalmon" class="block border-2 border-cocoa/20 dark:border-vanilla/20 rounded-xl p-3 text-center cursor-pointer">
+                                    <span class="text-sm font-bold">Salmon (Cat Friendly)</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Delivery & Details -->
+                    <div class="card p-6">
+                        <h3 class="font-serif font-bold text-xl mb-4">Delivery & Details</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="block text-sm font-bold mb-2">Delivery Date</label>
+                                <input type="date" class="input-field" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold mb-2">Time Slot</label>
+                                <select class="input-field">
+                                    <option>Morning (9AM - 12PM)</option>
+                                    <option>Afternoon (12PM - 4PM)</option>
+                                    <option>Evening (4PM - 7PM)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-bold mb-2">Personalized Message on Cake</label>
+                            <input type="text" class="input-field" placeholder="e.g. Happy Birthday Sarah!">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold mb-2">Special Instructions / Allergies</label>
+                            <textarea class="input-field h-24" placeholder="Any specific details we should know?"></textarea>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Right Column: Sticky Summary -->
+                <div class="lg:w-1/3">
+                    <div class="sticky top-24 card overflow-hidden border-2 border-apricot/30">
+                        <!-- Preview Image -->
+                        <div class="h-64 bg-vanilla dark:bg-cocoa/50 relative">
+                            <img id="cakePreviewImg" src="https://images.unsplash.com/photo-1621303837174-89787a7d4729?auto=format&fit=crop&q=80&w=600" alt="Cake Preview" class="w-full h-full object-cover transition-opacity duration-500">
+                            <div class="absolute inset-0 shadow-[inset_0_-40px_40px_rgba(0,0,0,0.3)]"></div>
+                            <span class="absolute bottom-4 left-4 text-white font-serif font-bold drop-shadow-md text-lg">Live Preview</span>
+                        </div>
+                        
+                        <!-- Cost Breakdown -->
+                        <div class="p-6">
+                            <h3 class="font-serif font-bold text-xl mb-4 border-b border-cocoa/10 dark:border-vanilla/10 pb-2">Order Summary</h3>
+                            
+                            <div class="space-y-3 text-sm mb-6">
+                                <div class="flex justify-between">
+                                    <span>Base Cake</span>
+                                    <span id="calcBasePrice">$45.00</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Flavor Upgrade</span>
+                                    <span id="calcFlavorPrice">+$0.00</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Decoration</span>
+                                    <span id="calcDecorPrice">+$0.00</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Pet-Friendly Prep</span>
+                                    <span id="calcPetPrice">+$0.00</span>
+                                </div>
+                            </div>
+                            
+                            <div class="flex justify-between items-center text-xl font-bold border-t border-cocoa/10 dark:border-vanilla/10 pt-4 mb-6">
+                                <span>Estimated Total</span>
+                                <span id="calcTotalPrice" class="text-apricot">$45.00</span>
+                            </div>
+
+                            <button type="button" class="btn-primary w-full py-4 text-lg" onclick="alert('Order placed successfully! Redirecting to dashboard...')">
+                                Bake My Order
+                            </button>
+                            <p class="text-center text-xs opacity-70 mt-4">Freshly prepared. Carefully packed. Made for your celebration.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-cocoa text-vanilla pt-20 pb-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+                <div>
+                    <a href="index.html" class="flex items-center gap-2 mb-6">
+                        <svg class="w-8 h-8 fill-apricot" viewBox="0 0 24 24">
+                            <path
+                                d="M12,2A2,2 0 0,1 14,4C14,5.11 13.1,6 12,6C10.9,6 10,5.11 10,4A2,2 0 0,1 12,2M7,12A2,2 0 0,0 9,14A2,2 0 0,0 11,12V10H13V12A2,2 0 0,0 15,14A2,2 0 0,0 17,12V8H7V12M19,16H5V20H19V16M21,16C21,14.9 20.1,14 19,14H18V9A1,1 0 0,0 17,8H15V6.63C15.63,6.23 16,5.54 16,4A4,4 0 0,0 12,0A4,4 0 0,0 8,4C8,5.54 8.37,6.23 9,6.63V8H7A1,1 0 0,0 6,9V14H5C3.9,14 3,14.9 3,16V20C3,21.1 3.9,22 5,22H19C20.1,22 21,21.1 21,20V16Z" />
+                        </svg>
+                        <span class="font-serif font-bold text-xl">Crumb & Canvas</span>
+                    </a>
+                    <p class="text-vanilla/70 text-sm leading-relaxed">Independent premium bakery brand focused on
+                        custom cakes, pastries, celebration desserts, and pet-friendly baked treats.</p>
+                </div>
+                <div>
+                    <h4 class="font-serif font-bold text-lg mb-6 text-apricot">Quick Links</h4>
+                    <ul class="space-y-3 text-sm text-vanilla/80">
+                        <li><a href="index.html" class="hover:text-apricot transition-colors">Home</a></li>
+                        <li><a href="menu.html" class="hover:text-apricot transition-colors">Menu</a></li>
+                        <li><a href="customize.html" class="hover:text-apricot transition-colors">Customize</a></li>
+                        <li><a href="dashboard.html" class="hover:text-apricot transition-colors">Dashboard</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-serif font-bold text-lg mb-6 text-apricot">Bakery</h4>
+                    <ul class="space-y-3 text-sm text-vanilla/80">
+                        <li><a href="#" class="hover:text-apricot transition-colors">Custom Cakes</a></li>
+                        <li><a href="#" class="hover:text-apricot transition-colors">Pastries</a></li>
+                        <li><a href="#" class="hover:text-apricot transition-colors">Pet-Friendly Treats</a></li>
+                        <li><a href="#" class="hover:text-apricot transition-colors">Delivery Options</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-serif font-bold text-lg mb-6 text-apricot">Support</h4>
+                    <ul class="space-y-3 text-sm text-vanilla/80">
+                        <li><a href="#" class="hover:text-apricot transition-colors">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-apricot transition-colors">Order Help</a></li>
+                        <li><a href="#" class="hover:text-apricot transition-colors">FAQs</a></li>
+                    </ul>
+                    <div class="mt-6 flex gap-4">
+                        <a href="#" class="text-vanilla hover:text-apricot transition-transform hover:scale-110"><svg
+                                class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm3.98-10.822a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
+                            </svg></a>
+                        <a href="#" class="text-vanilla hover:text-apricot transition-transform hover:scale-110"><svg
+                                class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                            </svg></a>
+                    </div>
+                </div>
+            </div>
+            <div
+                class="border-t border-vanilla/20 pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-vanilla/50">
+                <p>&copy; 2026 Crumb & Canvas. All rights reserved.</p>
+                <div class="flex gap-4 mt-4 md:mt-0">
+                    <a href="#" class="hover:text-apricot">Privacy Policy</a>
+                    <a href="#" class="hover:text-apricot">Terms of Service</a>
+                    <a href="#" class="hover:text-apricot">Allergen Information</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>

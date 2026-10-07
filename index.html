@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Bakery & Pastry Ordering Studio</title>
+    <meta name="description"
+        content="Independent premium bakery brand focused on custom cakes, pastries, celebration desserts, and pet-friendly baked treats.">
+    <script>
+        // Apply theme immediately to prevent flash
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        vanilla: '#FFF4D6',
+                        cocoa: '#4A2924',
+                        apricot: '#F4A261'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="antialiased selection:bg-apricot selection:text-vanilla">
+
+    <!-- Header -->
+    <header
+        class="sticky top-0 z-50 bg-vanilla/90 dark:bg-cocoa/90 backdrop-blur-md border-b border-cocoa/10 dark:border-vanilla/10 transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center">
+                    <a href="index.html" class="flex items-center gap-2 group">
+                        <svg class="w-10 h-10 fill-apricot transform group-hover:rotate-12 transition-transform duration-300"
+                            viewBox="0 0 24 24">
+                            <path
+                                d="M12,2A2,2 0 0,1 14,4C14,5.11 13.1,6 12,6C10.9,6 10,5.11 10,4A2,2 0 0,1 12,2M7,12A2,2 0 0,0 9,14A2,2 0 0,0 11,12V10H13V12A2,2 0 0,0 15,14A2,2 0 0,0 17,12V8H7V12M19,16H5V20H19V16M21,16C21,14.9 20.1,14 19,14H18V9A1,1 0 0,0 17,8H15V6.63C15.63,6.23 16,5.54 16,4A4,4 0 0,0 12,0A4,4 0 0,0 8,4C8,5.54 8.37,6.23 9,6.63V8H7A1,1 0 0,0 6,9V14H5C3.9,14 3,14.9 3,16V20C3,21.1 3.9,22 5,22H19C20.1,22 21,21.1 21,20V16Z" />
+                        </svg>
+                        <span class="font-serif font-bold text-xl text-cocoa dark:text-vanilla">Crumb & Canvas</span>
+                    </a>
+                </div>
+
+                <!-- Desktop Nav -->
+                <nav class="hidden lg:flex items-center space-x-8">
+                    <a href="index.html"
+                        class="text-apricot font-medium transition-colors">Home</a>
+                    <a href="menu.html"
+                        class="text-cocoa dark:text-vanilla hover:text-apricot dark:hover:text-apricot font-medium transition-colors">Menu</a>
+                    <a href="customize.html"
+                        class="text-cocoa dark:text-vanilla hover:text-apricot dark:hover:text-apricot font-medium transition-colors">Customize</a>
+                    <a href="dashboard.html"
+                        class="text-cocoa dark:text-vanilla hover:text-apricot dark:hover:text-apricot font-medium transition-colors">Dashboard</a>
+                </nav>
+
+                <!-- Actions -->
+                <div class="hidden lg:flex items-center space-x-4">
+                    <button id="themeToggle"
+                        class="theme-donut p-2 rounded-full hover:bg-cocoa/5 dark:hover:bg-vanilla/5 focus:outline-none"
+                        aria-label="Toggle Theme">
+                        <div id="donutIcon" class="flex items-center justify-center"></div>
+                    </button>
+                    <a href="login.html" class="btn-primary text-sm py-2 px-5">Login</a>
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="lg:hidden flex items-center gap-2">
+                    <button id="mobileMenuBtn" class="text-cocoa dark:text-vanilla p-2">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobileMenu"
+            class="hidden lg:hidden bg-vanilla dark:bg-cocoa border-t border-cocoa/10 dark:border-vanilla/10">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="index.html"
+                    class="block px-3 py-2 text-base font-medium text-apricot bg-apricot/10 rounded-md">Home</a>
+                <a href="menu.html"
+                    class="block px-3 py-2 text-base font-medium text-cocoa dark:text-vanilla hover:bg-apricot/10 rounded-md">Menu</a>
+                <a href="customize.html"
+                    class="block px-3 py-2 text-base font-medium text-cocoa dark:text-vanilla hover:bg-apricot/10 rounded-md">Customize</a>
+                <a href="dashboard.html"
+                    class="block px-3 py-2 text-base font-medium text-cocoa dark:text-vanilla hover:bg-apricot/10 rounded-md">Dashboard</a>
+                
+                <div class="flex items-center justify-between px-3 py-4 mt-2 border-t border-cocoa/10 dark:border-vanilla/10">
+                    <span class="text-base font-medium text-cocoa dark:text-vanilla">Theme</span>
+                    <button id="themeToggleMobile" class="theme-donut p-2 focus:outline-none transition-transform hover:scale-110" aria-label="Toggle Theme" onclick="document.getElementById('themeToggle').click()">
+                        <div id="donutIconMobile" class="flex items-center justify-center"></div>
+                    </button>
+                </div>
+
+                <a href="login.html" class="block w-full text-center mt-2 btn-primary text-sm py-2 px-5 rounded-md">Login</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="relative overflow-hidden pt-8 pb-20 lg:pt-12 lg:pb-32">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <div class="text-center lg:text-left animate-sprinkle">
+                        <h1
+                            class="text-5xl lg:text-7xl font-serif font-bold text-cocoa dark:text-vanilla leading-tight mb-6">
+                            Dream It. <br><span class="text-apricot italic">Bake It.</span> <br>Celebrate It.
+                        </h1>
+                        <p class="text-lg lg:text-xl text-cocoa/80 dark:text-vanilla/80 mb-8 max-w-lg mx-auto lg:mx-0">
+                            Custom cakes, premium pastries, and pet-friendly treats made specifically for your special
+                            moments.
+                        </p>
+                        <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                            <a href="customize.html" class="btn-primary text-center">Customize Your Cake</a>
+                            <a href="menu.html" class="btn-secondary text-center">Explore Menu</a>
+                        </div>
+                    </div>
+                    <div class="relative">
+                        <div
+                            class="relative rounded-t-[100px] rounded-b-[20px] overflow-hidden shadow-2xl animate-float">
+                            <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&q=80&w=800"
+                                alt="Beautiful Custom Cake" class="w-full h-[600px] object-cover">
+                            <div class="absolute inset-0 bg-gradient-to-t from-cocoa/40 to-transparent"></div>
+                        </div>
+                        <!-- Floating Badges -->
+                        <div class="absolute top-10 -left-6 bg-white dark:bg-cocoa p-4 rounded-2xl shadow-xl animate-float"
+                            style="animation-delay: 1s;">
+                            <p class="font-serif font-bold text-apricot">100% Custom</p>
+                            <p class="text-xs text-cocoa/70 dark:text-vanilla/70">Made to order</p>
+                        </div>
+                        <div class="absolute bottom-20 -right-6 bg-white dark:bg-cocoa p-4 rounded-2xl shadow-xl animate-float"
+                            style="animation-delay: 2s;">
+                            <p class="font-serif font-bold text-apricot">Pet-Friendly</p>
+                            <p class="text-xs text-cocoa/70 dark:text-vanilla/70">Options available</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Signature Creations -->
+        <section class="py-20 bg-apricot/10 dark:bg-cocoa/50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl font-serif font-bold mb-4">Signature Creations</h2>
+                    <p class="text-cocoa/70 dark:text-vanilla/70 max-w-2xl mx-auto">Handcrafted perfection for every
+                        occasion.</p>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Card 1 -->
+                    <div class="card group cursor-pointer" onclick="window.location.href='menu.html'">
+                        <div class="h-64 overflow-hidden relative">
+                            <img src="https://images.pexels.com/photos/27176823/pexels-photo-27176823.jpeg"
+                                alt="Celebration Cakes"
+                                class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700">
+                        </div>
+                        <div class="p-6 text-center">
+                            <h3 class="text-2xl font-serif font-bold mb-2">Celebration Cakes</h3>
+                            <p class="text-cocoa/70 dark:text-vanilla/70 text-sm mb-4">Bespoke designs for weddings and
+                                birthdays.</p>
+                            <span class="text-apricot font-semibold group-hover:underline">View Gallery &rarr;</span>
+                        </div>
+                    </div>
+                    <!-- Card 2 -->
+                    <div class="card group cursor-pointer" onclick="window.location.href='menu.html'">
+                        <div class="h-64 overflow-hidden relative">
+                            <img src="https://images.pexels.com/photos/16543350/pexels-photo-16543350.jpeg"
+                                alt="Premium Pastries"
+                                class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700">
+                        </div>
+                        <div class="p-6 text-center">
+                            <h3 class="text-2xl font-serif font-bold mb-2">Premium Pastries</h3>
+                            <p class="text-cocoa/70 dark:text-vanilla/70 text-sm mb-4">Flaky croissants and seasonal
+                                tarts.</p>
+                            <span class="text-apricot font-semibold group-hover:underline">View Gallery &rarr;</span>
+                        </div>
+                    </div>
+                    <!-- Card 3 -->
+                    <div class="card group cursor-pointer" onclick="window.location.href='menu.html'">
+                        <div class="h-64 overflow-hidden relative">
+                            <img src="https://images.pexels.com/photos/3983706/pexels-photo-3983706.jpeg"
+                                alt="Dessert Boxes"
+                                class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700">
+                        </div>
+                        <div class="p-6 text-center">
+                            <h3 class="text-2xl font-serif font-bold mb-2">Dessert Boxes</h3>
+                            <p class="text-cocoa/70 dark:text-vanilla/70 text-sm mb-4">Curated assortments for gifting.
+                            </p>
+                            <span class="text-apricot font-semibold group-hover:underline">View Gallery &rarr;</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pet-Friendly Section -->
+        <section class="py-20">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="bg-apricot rounded-[3rem] overflow-hidden shadow-xl flex flex-col lg:flex-row items-center">
+                    <div class="lg:w-1/2 p-12 lg:p-20 text-vanilla">
+                        <span class="uppercase tracking-widest text-sm font-semibold mb-2 block">Paws & Pastries</span>
+                        <h2 class="text-4xl md:text-5xl font-serif font-bold mb-6 text-cocoa">Pet-Friendly Bakery
+                            Collection</h2>
+                        <p class="mb-8 text-cocoa/80 text-lg">Because your furry best friends deserve to celebrate too.
+                            Our pet-friendly cakes and treats are crafted with carefully selected, pet-safe ingredients
+                            like peanut butter, pumpkin, and yogurt frosting.</p>
+                        <ul class="space-y-4 mb-8 text-cocoa font-medium">
+                            <li class="flex items-center gap-3">
+                                <svg class="w-5 h-5 text-cocoa" fill="currentColor" viewBox="0 0 20 20">
+                                    <path
+                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
+                                </svg>
+                                Dog-friendly Celebration Cakes
+                            </li>
+                            <li class="flex items-center gap-3">
+                                <svg class="w-5 h-5 text-cocoa" fill="currentColor" viewBox="0 0 20 20">
+                                    <path
+                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
+                                </svg>
+                                Cat-friendly Mini Cakes
+                            </li>
+                            <li class="flex items-center gap-3">
+                                <svg class="w-5 h-5 text-cocoa" fill="currentColor" viewBox="0 0 20 20">
+                                    <path
+                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
+                                </svg>
+                                Ingredient-conscious Pet Treats
+                            </li>
+                        </ul>
+                        <a href="menu.html"
+                            class="inline-block px-8 py-3 rounded-full bg-cocoa text-vanilla font-semibold tracking-wide hover:bg-opacity-90 transition-all">Shop
+                            Pet Collection</a>
+                    </div>
+                    <div class="lg:w-1/2 h-full min-h-[400px] w-full relative">
+                        <img src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?auto=format&fit=crop&q=80&w=800"
+                            alt="Dog with cake" class="absolute inset-0 w-full h-full object-cover">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Why Choose Us -->
+        <section class="py-20">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h2 class="text-4xl font-serif font-bold mb-16">Why Customers Choose Us</h2>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-8">
+                    <div class="p-6 rounded-2xl bg-white dark:bg-[#5a3630] shadow-sm hover:shadow-md transition-shadow">
+                        <div
+                            class="w-12 h-12 mx-auto bg-apricot/20 text-apricot rounded-full flex items-center justify-center mb-4 text-xl">
+                            ✨</div>
+                        <h4 class="font-bold mb-2">Made-to-Order</h4>
+                    </div>
+                    <div class="p-6 rounded-2xl bg-white dark:bg-[#5a3630] shadow-sm hover:shadow-md transition-shadow">
+                        <div
+                            class="w-12 h-12 mx-auto bg-apricot/20 text-apricot rounded-full flex items-center justify-center mb-4 text-xl">
+                            🎨</div>
+                        <h4 class="font-bold mb-2">Custom Designs</h4>
+                    </div>
+                    <div class="p-6 rounded-2xl bg-white dark:bg-[#5a3630] shadow-sm hover:shadow-md transition-shadow">
+                        <div
+                            class="w-12 h-12 mx-auto bg-apricot/20 text-apricot rounded-full flex items-center justify-center mb-4 text-xl">
+                            🌿</div>
+                        <h4 class="font-bold mb-2">Fresh Ingredients</h4>
+                    </div>
+                    <div class="p-6 rounded-2xl bg-white dark:bg-[#5a3630] shadow-sm hover:shadow-md transition-shadow">
+                        <div
+                            class="w-12 h-12 mx-auto bg-apricot/20 text-apricot rounded-full flex items-center justify-center mb-4 text-xl">
+                            🐾</div>
+                        <h4 class="font-bold mb-2">Pet-Friendly Options</h4>
+                    </div>
+                    <div class="p-6 rounded-2xl bg-white dark:bg-[#5a3630] shadow-sm hover:shadow-md transition-shadow">
+                        <div
+                            class="w-12 h-12 mx-auto bg-apricot/20 text-apricot rounded-full flex items-center justify-center mb-4 text-xl">
+                            🚚</div>
+                        <h4 class="font-bold mb-2">Flexible Delivery</h4>
+                    </div>
+                    <div class="p-6 rounded-2xl bg-white dark:bg-[#5a3630] shadow-sm hover:shadow-md transition-shadow">
+                        <div
+                            class="w-12 h-12 mx-auto bg-apricot/20 text-apricot rounded-full flex items-center justify-center mb-4 text-xl">
+                            🏷️</div>
+                        <h4 class="font-bold mb-2">Transparent Pricing</h4>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Delivery Experience -->
+        <section class="py-20 bg-cocoa text-vanilla">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl font-serif font-bold mb-4">The Delivery Experience</h2>
+                    <p class="text-vanilla/80">From our ovens to your celebration.</p>
+                </div>
+                <div class="flex flex-col md:flex-row justify-between items-center relative">
+                    <div class="hidden md:block absolute top-1/2 left-0 w-full h-1 bg-apricot/30 -z-0 -translate-y-1/2">
+                    </div>
+
+                    <div class="relative z-10 flex flex-col items-center mb-8 md:mb-0 group">
+                        <div
+                            class="w-20 h-20 rounded-full border-4 border-apricot mb-4 shadow-lg overflow-hidden bg-vanilla transform group-hover:scale-110 transition-transform duration-300">
+                            <img src="https://images.pexels.com/photos/8426687/pexels-photo-8426687.jpeg"
+                                alt="Baking process" class="w-full h-full object-cover">
+                        </div>
+                        <h4 class="font-bold text-lg">Bake</h4>
+                    </div>
+                    <div class="relative z-10 flex flex-col items-center mb-8 md:mb-0 group">
+                        <div
+                            class="w-20 h-20 rounded-full border-4 border-apricot mb-4 shadow-lg overflow-hidden bg-vanilla transform group-hover:scale-110 transition-transform duration-300">
+                            <img src="https://images.pexels.com/photos/20541848/pexels-photo-20541848.jpeg"
+                                alt="Decorating cake" class="w-full h-full object-cover">
+                        </div>
+                        <h4 class="font-bold text-lg">Decorate</h4>
+                    </div>
+                    <div class="relative z-10 flex flex-col items-center mb-8 md:mb-0 group">
+                        <div
+                            class="w-20 h-20 rounded-full border-4 border-apricot mb-4 shadow-lg overflow-hidden bg-vanilla transform group-hover:scale-110 transition-transform duration-300">
+                            <img src="https://images.pexels.com/photos/8176276/pexels-photo-8176276.jpeg"
+                                alt="Quality check" class="w-full h-full object-cover">
+                        </div>
+                        <h4 class="font-bold text-lg">Quality Check</h4>
+                    </div>
+                    <div class="relative z-10 flex flex-col items-center mb-8 md:mb-0 group">
+                        <div
+                            class="w-20 h-20 rounded-full border-4 border-apricot mb-4 shadow-lg overflow-hidden bg-vanilla transform group-hover:scale-110 transition-transform duration-300">
+                            <img src="https://images.pexels.com/photos/9403582/pexels-photo-9403582.jpeg"
+                                alt="Packing order" class="w-full h-full object-cover">
+                        </div>
+                        <h4 class="font-bold text-lg">Pack</h4>
+                    </div>
+                    <div class="relative z-10 flex flex-col items-center group">
+                        <div
+                            class="w-20 h-20 rounded-full border-4 border-apricot mb-4 shadow-lg overflow-hidden bg-vanilla transform group-hover:scale-110 transition-transform duration-300">
+                            <img src="https://images.unsplash.com/photo-1617347454431-f49d7ff5c3b1?auto=format&fit=crop&w=150&q=80"
+                                alt="Delivery" class="w-full h-full object-cover">
+                        </div>
+                        <h4 class="font-bold text-lg">Deliver</h4>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Final CTA -->
+        <section class="py-32 text-center relative overflow-hidden">
+            <div class="absolute inset-0 z-0 opacity-20 dark:opacity-10">
+                <img src="https://images.unsplash.com/photo-1558961363-fa8fdf82db35?auto=format&fit=crop&q=80&w=1920"
+                    alt="Bakery Background" class="w-full h-full object-cover">
+            </div>
+            <div class="relative z-10 max-w-3xl mx-auto px-4">
+                <h2 class="text-5xl md:text-7xl font-serif font-bold mb-8">Dream It. Bake It.<br><span
+                        class="text-apricot">Celebrate It.</span></h2>
+                <div class="flex flex-col sm:flex-row gap-6 justify-center mt-12">
+                    <a href="customize.html" class="btn-primary text-lg px-8 py-4">Start Customizing</a>
+                    <a href="menu.html"
+                        class="btn-secondary text-lg px-8 py-4 bg-white/50 backdrop-blur-sm dark:bg-cocoa/50">View
+                        Bakery Menu</a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-cocoa text-vanilla pt-20 pb-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+                <div>
+                    <a href="index.html" class="flex items-center gap-2 mb-6">
+                        <svg class="w-8 h-8 fill-apricot" viewBox="0 0 24 24">
+                            <path
+                                d="M12,2A2,2 0 0,1 14,4C14,5.11 13.1,6 12,6C10.9,6 10,5.11 10,4A2,2 0 0,1 12,2M7,12A2,2 0 0,0 9,14A2,2 0 0,0 11,12V10H13V12A2,2 0 0,0 15,14A2,2 0 0,0 17,12V8H7V12M19,16H5V20H19V16M21,16C21,14.9 20.1,14 19,14H18V9A1,1 0 0,0 17,8H15V6.63C15.63,6.23 16,5.54 16,4A4,4 0 0,0 12,0A4,4 0 0,0 8,4C8,5.54 8.37,6.23 9,6.63V8H7A1,1 0 0,0 6,9V14H5C3.9,14 3,14.9 3,16V20C3,21.1 3.9,22 5,22H19C20.1,22 21,21.1 21,20V16Z" />
+                        </svg>
+                        <span class="font-serif font-bold text-xl">Crumb & Canvas</span>
+                    </a>
+                    <p class="text-vanilla/70 text-sm leading-relaxed">Independent premium bakery brand focused on
+                        custom cakes, pastries, celebration desserts, and pet-friendly baked treats.</p>
+                </div>
+                <div>
+                    <h4 class="font-serif font-bold text-lg mb-6 text-apricot">Quick Links</h4>
+                    <ul class="space-y-3 text-sm text-vanilla/80">
+                        <li><a href="index.html" class="hover:text-apricot transition-colors">Home</a></li>
+                        <li><a href="menu.html" class="hover:text-apricot transition-colors">Menu</a></li>
+                        <li><a href="customize.html" class="hover:text-apricot transition-colors">Customize</a></li>
+                        <li><a href="dashboard.html" class="hover:text-apricot transition-colors">Dashboard</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-serif font-bold text-lg mb-6 text-apricot">Bakery</h4>
+                    <ul class="space-y-3 text-sm text-vanilla/80">
+                        <li><a href="#" class="hover:text-apricot transition-colors">Custom Cakes</a></li>
+                        <li><a href="#" class="hover:text-apricot transition-colors">Pastries</a></li>
+                        <li><a href="#" class="hover:text-apricot transition-colors">Pet-Friendly Treats</a></li>
+                        <li><a href="#" class="hover:text-apricot transition-colors">Delivery Options</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-serif font-bold text-lg mb-6 text-apricot">Support</h4>
+                    <ul class="space-y-3 text-sm text-vanilla/80">
+                        <li><a href="#" class="hover:text-apricot transition-colors">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-apricot transition-colors">Order Help</a></li>
+                        <li><a href="#" class="hover:text-apricot transition-colors">FAQs</a></li>
+                    </ul>
+                    <div class="mt-6 flex gap-4">
+                        <a href="#" class="text-vanilla hover:text-apricot transition-transform hover:scale-110"><svg
+                                class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm3.98-10.822a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
+                            </svg></a>
+                        <a href="#" class="text-vanilla hover:text-apricot transition-transform hover:scale-110"><svg
+                                class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                            </svg></a>
+                    </div>
+                </div>
+            </div>
+            <div
+                class="border-t border-vanilla/20 pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-vanilla/50">
+                <p>&copy; 2026 Crumb & Canvas. All rights reserved.</p>
+                <div class="flex gap-4 mt-4 md:mt-0">
+                    <a href="#" class="hover:text-apricot">Privacy Policy</a>
+                    <a href="#" class="hover:text-apricot">Terms of Service</a>
+                    <a href="#" class="hover:text-apricot">Allergen Information</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to top button -->
+    <button id="backToTop"
+        class="fixed bottom-8 right-8 w-12 h-12 bg-apricot rounded-full shadow-xl flex items-center justify-center text-cocoa hover:scale-110 transition-transform z-50 group">
+        <svg class="w-6 h-6 transform group-hover:-translate-y-1 transition-transform" fill="none" stroke="currentColor"
+            viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+        </svg>
+    </button>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
