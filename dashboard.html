@@ -98,6 +98,12 @@
             
             <!-- Overview Tab (Active) -->
             <div id="tab-overview" class="tab-content active block">
+                <!-- Welcome Message -->
+                <div class="mb-8">
+                    <h2 class="font-serif font-bold text-3xl text-cocoa dark:text-vanilla mb-2">Welcome back, Baker Chef! 👋</h2>
+                    <p class="text-cocoa/70 dark:text-vanilla/70">Here's what's happening with your bakery today.</p>
+                </div>
+
                 <!-- Overview Cards -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                     <div class="card p-6 border-t-4 border-apricot">
@@ -234,10 +240,10 @@
                     <div class="flex flex-wrap gap-2">
                         <input type="text" placeholder="Search orders..." class="px-4 py-2 rounded-lg border border-cocoa/20 dark:border-vanilla/20 bg-white/50 dark:bg-black/20 focus:outline-none focus:border-apricot text-sm text-cocoa dark:text-vanilla w-full sm:w-auto">
                         <select class="px-4 py-2 rounded-lg border border-cocoa/20 dark:border-vanilla/20 bg-white/50 dark:bg-black/20 focus:outline-none focus:border-apricot text-sm text-cocoa dark:text-vanilla">
-                            <option>All Statuses</option>
-                            <option>New</option>
-                            <option>Baking</option>
-                            <option>Ready</option>
+                            <option class="bg-white dark:bg-cocoa">All Statuses</option>
+                            <option class="bg-white dark:bg-cocoa">New</option>
+                            <option class="bg-white dark:bg-cocoa">Baking</option>
+                            <option class="bg-white dark:bg-cocoa">Ready</option>
                         </select>
                         <button class="btn-primary py-2 px-4 text-sm rounded-lg">Filter</button>
                     </div>
